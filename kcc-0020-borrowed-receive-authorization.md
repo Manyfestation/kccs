@@ -5,10 +5,12 @@ Borrowed Receive is defined in
 
 ## Motivation
 
-KIP-9 requires each new UTXO to include KAS for storage.
+[KIP-9](https://github.com/kaspanet/kips/blob/master/kip-0009.md) prices UTXO-set
+growth through storage mass, which rises for small-valued new outputs.
 
-For token transfers, this means the sender must fund every new recipient token
-UTXO, or the recipient must co-sign and provide the required KAS.
+For token transfers, this means the sender normally funds each new recipient
+token UTXO with enough KAS, or the recipient co-signs and supplies an existing
+UTXO.
 
 Borrowed Receive allows the sender to use an existing recipient KCC20 UTXO as
 the receive target. Instead of creating a new recipient token UTXO, the sender
@@ -96,6 +98,28 @@ requiring `Hash(x_(i-1)) == x_i`. The revealed value becomes the successor's
 `borrow_guard`, ready for the next borrow.
 
 The authorizations are revealed in reverse order and cannot be reused. The
-wallet may provide them to an authorized sender in advance, allowing up to `n`
-ordered borrows while the wallet remains offline. The chain is exhausted after
-`x_0` is revealed.
+wallet may release them one at a time while monitoring each borrow, or several
+in advance while accepting that its outpoint may change until they are consumed
+or revoked. The chain is exhausted after `x_0` is revealed.
+
+#### Wallet-control model
+
+The hash-chain scheme is designed to keep the recipient's wallet in control of
+when its UTXO may change. The wallet releases one authorization while monitoring
+the network, records the confirmed successor outpoint, and keeps the next
+authorization private until another change is expected. Without a released
+authorization, the UTXO cannot be borrowed, so the wallet may go offline knowing
+that its outpoint will remain stable.
+
+The authorization is normally shared with an intended sender, but is not
+strictly bound to that sender. Once a transaction reveals it in the mempool,
+another party may copy it into a different valid borrowed-receive transaction
+and attempt to have that transaction confirmed first. Because both transactions
+spend the same UTXO, only one can be accepted. The competing transaction must
+still increase the recipient's token amount and preserve its KAS value, limiting
+the incentive for this form of front-running.
+
+Before going offline, a wallet that has released an authorization which remains
+unused may revoke it through an owner-authorized transfer or consume it itself
+in a valid borrowed receive. Applications that instead require
+transaction-specific authorization may use the Schnorr-signature scheme.
