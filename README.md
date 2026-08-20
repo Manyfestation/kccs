@@ -8,4 +8,4 @@ KCCs do not propose changes to Kaspa consensus or core-node behavior. Such chang
 
 | Number | Category | Title | Author | Status |
 |--------|----------|-------|--------|--------|
-| [KCC-0020](kcc-0020.md) | Covenant | Fungible Token Covenant Specification | Manyfest, Michael Sutton, IzioDev | Draft |
+| [KCC-0020](kcc-0020.md) | Covenant | Fungible Token Covenant Specification | Manyfest, Michael Sutton, Romain Billot | Draft |
