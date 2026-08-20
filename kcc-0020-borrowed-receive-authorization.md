@@ -1,4 +1,4 @@
-# KCC20 Borrowed Receive Guide
+# KCC20 Borrowed Receive Authorization
 
 Borrowed Receive is defined in
 [KCC20 Section 5](kcc-0020.md#5-borrowed-receive).
