@@ -39,39 +39,39 @@ scheme.
 
 | Scheme | Meaning of `borrow_guard` | `borrow_witness` | Successor `borrow_guard` |
 | --- | --- | --- | --- |
-| `disabled` | Unused | Borrowing is rejected | Not applicable |
-| `amount-threshold` | First eight bytes contain the threshold | Empty | Unchanged |
-| `schnorr-signature` | Dedicated 32-byte public key | 65-byte Schnorr transaction signature | Unchanged |
-| `hash-chain` | Current 32-byte hash | Its 32-byte preimage | Revealed preimage |
+| `disabled/v1` | Unused | Borrowing is rejected | Not applicable |
+| `amount-threshold/v1` | First eight bytes contain the threshold | Empty | Unchanged |
+| `schnorr-signature/v1` | Dedicated 32-byte public key | 65-byte Schnorr transaction signature | Unchanged |
+| `hash-chain/v1` | Current 32-byte hash | Its 32-byte preimage | Revealed preimage |
 
 Every borrowed receive preserves `borrow_scheme`. A normal owner-authorized
 transfer may replace both `borrow_scheme` and `borrow_guard`.
 
-### Disabled
+### `disabled/v1`
 
-The `disabled` scheme prevents the UTXO from being borrowed and does not use
+The `disabled/v1` scheme prevents the UTXO from being borrowed and does not use
 `borrow_guard`. Receiving tokens therefore requires a separate output.
 
-### Amount threshold
+### `amount-threshold/v1`
 
-The `amount-threshold` scheme permits borrowing without sender-specific
+The `amount-threshold/v1` scheme permits borrowing without sender-specific
 authorization. The first eight bytes of `borrow_guard` contain the threshold
 that the token increase must strictly exceed; the remaining bytes are unused.
 This makes dust-level token spam ineffective, although sufficiently large
 transfers can still change the outpoint. No borrow witness is required.
 
-### Schnorr signature
+### `schnorr-signature/v1`
 
-The `schnorr-signature` scheme stores a dedicated borrow public key in
+The `schnorr-signature/v1` scheme stores a dedicated borrow public key in
 `borrow_guard`. A sender with access to the corresponding borrow signing key may
 authorize repeated borrows. This supports controlled reuse by recurring trusted
 senders without granting permission to spend the recipient's tokens or reduce
 the UTXO's KAS value. Other senders cannot make the locally recorded outpoint
 stale through Borrowed Receive.
 
-### Hash chain
+### `hash-chain/v1`
 
-The `hash-chain` scheme uses `borrow_guard` as the current commitment to an
+The `hash-chain/v1` scheme uses `borrow_guard` as the current commitment to an
 OTP-like sequence of one-time borrow authorizations. A wallet can preallocate a
 finite number of authorizations in advance. Each borrowed receive consumes one
 authorization and advances `borrow_guard`, without requiring a new signature
