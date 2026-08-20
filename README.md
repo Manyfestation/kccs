@@ -8,4 +8,6 @@ KCCs do not propose changes to Kaspa consensus or core-node behavior. Such chang
 
 | Number | Category | Title | Author | Status |
 |--------|----------|-------|--------|--------|
-| [KCC-0020](kcc-0020.md) | Covenant | Fungible Token Covenant Specification | Sivan Helfer, Michael Sutton, Romain Billot | Draft |
+| [1](kcc-0001.md) | Standard, Concepts, Covenant | Covenant definition, concepts, bytes layout and ABI | Romain Billot, Michael Sutton, Ori Newman | Draft |
+| [2](kcc-0002.md) | Program ABI Standard, Application | Authority Schemes | Romain Billot, Michael Sutton | Draft |
+| [20](kcc-0020.md) | Covenant | Fungible Token Covenant Specification | Sivan Helfer, Michael Sutton, Romain Billot | Draft |
