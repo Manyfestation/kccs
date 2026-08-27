@@ -45,10 +45,6 @@ Some schemes require a scheme-specific `borrow_witness`.
 Every borrowed receive preserves `borrow_scheme`. A normal owner-authorized
 transfer may replace both `borrow_scheme` and `borrow_guard`.
 
-Every signature used by `schnorr-signature/v1` or `hash-chain/v1` is a
-`SIGHASH_ALL` Schnorr transaction signature that commits to the complete
-borrowed-receive transaction.
-
 ### `disabled/v1`
 
 The `disabled/v1` scheme rejects borrowed receives.
@@ -71,8 +67,7 @@ KAS value.
 
 The `hash-chain/v1` scheme allows one borrow per released chain link. Each link
 is a one-time authorization bound to its own signing key and advances
-`borrow_guard` when used. A wallet can prepare a finite chain and release links
-only when it expects the UTXO to change.
+`borrow_guard` when used. A wallet can prepare a finite chain and release links at will to authorize individual borrows.
 
 The idea originates in Rivest and Shamir's [PayWord and MicroMint: Two Simple
 Micropayment Schemes](https://people.csail.mit.edu/rivest/pubs/RS96a.pdf). KCC20
@@ -100,32 +95,22 @@ VerifySchnorr(pubkey_i, transaction, signature_i)
 ```
 
 The wallet gives the intended sender `x_(i-1)` and `private_key_i`. The revealed
-value becomes the successor's `borrow_guard`, ready for the next borrow.
+value `x_(i-1)` becomes the successor's `borrow_guard`, ready for the next borrow.
 
 The authorizations are revealed in reverse order and cannot be reused. The
 wallet may release them one at a time while monitoring each borrow, or several
 in advance while accepting that its outpoint may change until they are consumed
 or revoked. The chain is exhausted after `x_0` is revealed.
 
-The authorization is normally shared with an intended sender and is bound to
-its one-time signing key. Once a transaction reveals the preimage, public key,
-and signature in the mempool, another party may rebroadcast that transaction
-but cannot use the authorization in a different transaction without the private
-key.
+#### Wallet-control model
 
-#### Wallet synchronization
+The hash-chain scheme is designed to keep the recipient's wallet in control of
+when its UTXO may change. The wallet releases one authorization while monitoring
+the network, records the confirmed successor outpoint, and keeps the next
+authorization private until another change is expected. Without a released
+authorization, the UTXO cannot be borrowed, so the wallet may go offline knowing
+that its outpoint will remain stable.
 
-Ordinary receives create new UTXOs and leave a wallet's existing UTXOs
-unchanged. Borrowed Receive can instead recreate an existing UTXO without owner
-authorization, so the wallet may need to synchronize to learn its new outpoint.
-
-`disabled/v1` prevents such changes. `amount-threshold/v1` allows any sender
-above the threshold to cause them, while `schnorr-signature/v1` gives an
-approved borrower reusable permission. `hash-chain/v1` is the only enabled
-scheme in which the wallet grants each borrow separately.
-
-The wallet can release one authorization, wait for the borrow, and record its
-successor. If no borrow appears, it can revoke the authorization by advancing
-the guard. Once the guard update confirms, the released authorization is
-invalid. Without another released authorization, the outpoint cannot change
-through Borrowed Receive.
+Before going offline, a wallet that has released an authorization which remains
+unused may revoke it through an owner-authorized transfer or consume it itself
+in a valid borrowed receive.
