@@ -59,9 +59,8 @@ increase. No `borrow_witness` is required.
 ### `schnorr-signature/v1`
 
 The `schnorr-signature/v1` scheme allows the holder of a dedicated borrow key to
-authorize repeated borrows. Each borrow requires a signature for the complete
-transaction. The key cannot spend the recipient's tokens or reduce the UTXO's
-KAS value.
+authorize repeated borrows. Each borrow requires a valid transaction signature.
+The key cannot spend the recipient's tokens or reduce the UTXO's KAS value.
 
 ### `hash-chain/v1`
 
